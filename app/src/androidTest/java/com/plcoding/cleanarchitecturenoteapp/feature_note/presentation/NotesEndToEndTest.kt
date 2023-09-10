@@ -2,8 +2,10 @@ package com.plcoding.cleanarchitecturenoteapp.feature_note.presentation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -126,5 +128,49 @@ class NotesEndToEndTest {
         composeRule
             .onNodeWithText("test-title2")
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun saveNewNotes_orderByTitleDescending() {
+        for (i in 1..3) {
+            // FABをクリックして追加画面に遷移する
+            composeRule.onNodeWithContentDescription("Add").performClick()
+
+            // タイトルと内容に文章を挿入する
+            composeRule
+                .onNodeWithTag(TestTags.TITLE_TEXT_FIELD)
+                .performTextInput(i.toString())
+            composeRule
+                .onNodeWithTag(TestTags.CONTENT_TEXT_FIELD)
+                .performTextInput(i.toString())
+            // 保存ボタンを押す
+            composeRule
+                .onNodeWithContentDescription("Save")
+                .performClick()
+        }
+
+        composeRule.onNodeWithText("1").assertIsDisplayed()
+        composeRule.onNodeWithText("2").assertIsDisplayed()
+        composeRule.onNodeWithText("3").assertIsDisplayed()
+
+        composeRule
+            .onNodeWithContentDescription("Sort")
+            .performClick()
+        composeRule
+            .onNodeWithContentDescription("Title")
+            .performClick()
+        composeRule
+            .onNodeWithContentDescription("Descending")
+            .performClick()
+
+        composeRule
+            .onAllNodesWithTag(TestTags.NOTE_ITEM)[0]
+            .assertTextContains("3")
+        composeRule
+            .onAllNodesWithTag(TestTags.NOTE_ITEM)[1]
+            .assertTextContains("2")
+        composeRule
+            .onAllNodesWithTag(TestTags.NOTE_ITEM)[2]
+            .assertTextContains("1")
     }
 }
