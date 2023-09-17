@@ -173,4 +173,48 @@ class NotesEndToEndTest {
             .onAllNodesWithTag(TestTags.NOTE_ITEM)[2]
             .assertTextContains("1")
     }
+
+    @Test
+    fun saveNewNotes_orderByTitleAscending() {
+        for (i in 1..3) {
+            // FABをクリックして追加画面に遷移する
+            composeRule.onNodeWithContentDescription("Add").performClick()
+
+            // タイトルと内容に文章を挿入する
+            composeRule
+                .onNodeWithTag(TestTags.TITLE_TEXT_FIELD)
+                .performTextInput(i.toString())
+            composeRule
+                .onNodeWithTag(TestTags.CONTENT_TEXT_FIELD)
+                .performTextInput(i.toString())
+            // 保存ボタンを押す
+            composeRule
+                .onNodeWithContentDescription("Save")
+                .performClick()
+        }
+
+        composeRule.onNodeWithText("1").assertIsDisplayed()
+        composeRule.onNodeWithText("2").assertIsDisplayed()
+        composeRule.onNodeWithText("3").assertIsDisplayed()
+
+        composeRule
+            .onNodeWithContentDescription("Sort")
+            .performClick()
+        composeRule
+            .onNodeWithContentDescription("Title")
+            .performClick()
+        composeRule
+            .onNodeWithContentDescription("Ascending")
+            .performClick()
+
+        composeRule
+            .onAllNodesWithTag(TestTags.NOTE_ITEM)[0]
+            .assertTextContains("1")
+        composeRule
+            .onAllNodesWithTag(TestTags.NOTE_ITEM)[1]
+            .assertTextContains("2")
+        composeRule
+            .onAllNodesWithTag(TestTags.NOTE_ITEM)[2]
+            .assertTextContains("3")
+    }
 }
